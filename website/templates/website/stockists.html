@@ -1,0 +1,233 @@
+{% load  static %}
+{% load cloudinary %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Jalome Chirwa"/>
+    <meta name="description" content="View our stockists"/>
+    <meta name="keywords" content="keywords" content="Soap molds,handmade soap,natural soap,hand soap,soap,lavender soap,bar soap,exfoliating soap,buy soap,body soap,organic soap,shea butter soap,melt and pour soap base,sandalwood soap,goat milk soap,soap making kits,facial soap,milk soap,olive soap,base"/>
+    <meta name="robots" content="index,follow"/>
+    <link rel="stylesheet" href="{% static 'website/font-awesome-4.7.0/css/font-awesome.min.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/index.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/animate.css'%}"/>
+    <link rel="icon" href="{% static 'website/favicon.ico' %}"/> 
+    <script type="text/javascript" src="{% static "website/jquery.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/index.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/instafeed.js" %}"></script>
+    {% block "title" %}
+        <title>I am SOAP - Stockists | View Our Stockists</title>
+    {% endblock %}
+</head>
+<body style='background:#80808008;'>
+    <div id="contentBox"></div>
+    <div id="overlay" onclick="closeOverlay()"></div>
+    <div id='leftPane'>
+        <p id='searchCont'><input id="searchInput" type="text" placeholder="Search products.."/> <img id="searchIcon"  onclick='Search()' src="{% static 'website/search.png' %}"/></p>
+        <p id='link' onclick="document.location ='/'">Home</p>
+        <p id='link' onclick='getProducts()'>Shop</p>
+        <p id='link' onclick="document.location ='/account'">Account</p>
+        <p id='link' onclick='PlasticFree()'>Plastic free</p>
+        <p id='link' onclick='stores()'>Stockists</p>
+        {% comment %} <p id='link' onclick='labels()'>White labels</p>
+        <p id='link' onclick='about()'>FAQ</p> {% endcomment %}
+        <p id='link' onclick='contact()'>Contact</p>
+        <p id='logo' onclick="document.location='/'"><img src="{% static 'website/logo.jpg' %}"/></p>
+        <p id='copyright'>I am SOAP - 2018</p>
+        <img id='menuIcon' onclick='Mobilemenu()' src="{% static 'website/menu.svg' %}"/>
+    </div>
+    <div  id='rightPane' style='background:unset;'>
+        <div id="logoutDiv"><strong id="accInfo">I am SOAP stockists</strong></div>
+        <div id='stockistCont'>
+            <div id='stockistRowBlock'>
+                <div id='stockist'>
+                    <strong>Country Khaya</strong>
+                    <p>Jeffrey's Bay</p>
+                    <p>admin@countrykhaya.co.za</p>
+                    <p>042 293 1057</p><br>
+                    <a href="http://countrykhaya.co.za/" target="_blank">Visit website</a><br><br>
+                    <a href="https://www.facebook.com/countrykhaya/" target="_blank">Visit facebook page</a>
+                </div>
+                <div id='stockist'>
+                     <strong>Kamyko Hair Salon</strong>
+                    <p>Wellington</p>
+                    <p>Somerset</p>
+                    <p>England</p><br>
+                    <a href="https://www.kamykohair.co.uk/" target="_blank">Visit website</a><br><br>
+                    <a href="https://www.instagram.com/p/BpG6WYThIZk/" target="_blank">View instagram post</a>
+                </div>
+                <div id='stockist'>
+                    <strong>st Francis Wellness</strong>
+                    <p>The Village Shopping Centre</p>
+                    <p>st Francis Bay</p>
+                    <p>082 682 0378</p><br>
+                    <a href="https://stfranciswellness.co.za/" target="_blank">Visit website</a><br><br>
+                    <a href="https://www.facebook.com/stfranciswellness/" target="_blank">Visit facebook page</a>
+                </div>
+            </div>
+
+            <div id='stockistRowBlock'>
+                <div id='stockist'>
+                    <strong>Orb</strong>
+                    <p>Waverley</p>
+                    <p>Bloemfonten</p>
+                    <p>083 752 8019</p><br>
+                    <a href="https://www.facebook.com/orb4nature/" target="_blank">Visit facebook page</a>
+                </div>
+                <div id='stockist'>
+                    <strong>Lumin Steyn</strong>
+                    <p>Pellsrus</p>
+                    <p>Jeffry's Bay</p>
+                    <p>072 514 8658</p><br>
+                     <a href="https://www.facebook.com/PotteryByLuminJamesOriginals/" target="_blank">Visit facebook page</a>
+                </div>
+                <div id='stockist'>
+                    <strong>Health Support Shop</strong>
+                    <p>88 Da Gama Road</p>
+                    <p>Eastern Cape</p>
+                    <p>042 293 3704</p><br>
+                    <a href="https://www.facebook.com/nhdirectories.co.za/" target="_blank">Visit facebook page</a>
+                    
+                </div>
+            </div>
+        </div>
+
+        {% comment %} <footer>   
+            <div id='author'>
+                <p>Website developed by Jalome Chirwa</p>
+            </div>
+            <div id='socialIcon'>
+                <span>Social media links:</span>
+                <a href="https://www.instagram.com/i_am_soap/" target="_blank"><i class="fa fa-instagram"></i></a>
+                <a href="https://twitter.com/i_am_SOAP_ZA" target="_blank"><i class="fa fa-twitter"></i></a>
+                <i class="fa fa-facebook"></i>
+            </div>
+        </footer> {% endcomment %}
+
+    </div>
+
+
+    </div>
+
+    <script type="text/javascript">
+        //contact form message
+        function contactFormMessage(name,email,mobile,to,message){
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "url":"/",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"contactMessage", "name": name,"email":email,"mobile":mobile,"to":to,"message":message},
+                "success":function(data){
+                    console.log(data);
+                    renderContactMessageResult(data.Message);
+                }
+
+            });
+        }
+
+        //renders the top section of the shop page
+        function renderShopOptions(){
+            var pane = $("#rightPane");
+            var paneTopBar = $("<div id='paneTopBar'></div>");
+            var productInfoTab = $("<div id='productInfo'></div>");
+            var productsContainer = $("<div id='products'></div>");
+            var shopMenu = $("<div id='shopMenu'><ul id='menu'><li id='filter'>Filter: </li><li onclick='selectCat(this)' id='All' class='selected'>All</li><li id='Bars' onclick='selectCat(this)'>Bars</li><li id='Shampoo' onclick='selectCat(this)'>Shampoo</li><li id='LiquidOil' onclick='selectCat(this)'>Liquid soap</li><li id='clear' onclick='selectCat(this)'>Clear Soap</li> <li id='cologne' onclick='selectCat(this)'>Cologne & Perfume</li> <li id='Lotion' onclick='selectCat(this)'>Lotion</li> <li id='plastic' onclick='selectCat(this)'>Plastic free</li> <li id='palm' onclick='selectCat(this)'>Palm oil free</li></ul></div>");
+            var cart = $("<div id='cart' onclick='DisplayCart()'><img src='{% static 'website/cart.png' %}'/> <span id='Count'>0</span></div>")
+            paneTopBar.append(shopMenu);
+            paneTopBar.append(cart);
+            pane.append(paneTopBar);
+            pane.append(productInfoTab);
+            pane.append(productsContainer);
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getProducts"},
+                "success":function(data){
+                    console.table(data.response)
+                    renderproducts(data.response, "{% static 'website/info.png' %}");
+                }
+            });
+        }
+
+        function getCategory(category){
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getCategory", "category":category},
+                "success":function(data){
+                    console.table(data.response);
+                    renderproducts(data.response, "{% static 'website/info.png' %}");
+                }
+            });
+        }
+
+        function displayImg(id){
+            $("#productInfo").css("display", "block");
+            var product_display = $("<div id='product_display'> </div>");
+            var image_tab = $("<img id='view_product_image'>");
+            var product_desc = $("<div id='view_product_desc'>  </div>");
+            product_display.append(image_tab);
+            product_display.append(product_desc);
+            $("#productInfo").append(product_display);
+            $("#productInfo").append(product_display);
+            if(window.innerWidth <= 1000){
+                $("#paneTopBar").css("position","absolute");
+                $("#paneTopBar").css("z-index","1");
+                $("#rightPane").css("position","fixed");
+            }
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getProductInfo", "id":id},
+                "success":function(data){
+                    console.table(data.response);
+                    renderProductInfo(data.response);
+                }
+            });
+        }
+
+        function getCartProducts(cart){
+            console.log(cart);
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "url":"/",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getCartProducts", "cart":JSON.stringify(cart)},
+                "success":function(data){
+                    console.table(data.response);
+                    renderCart(data.response);
+                }
+            });
+        }
+
+        function createAccount(username,email,password){
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "url":"/register",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"registerAccount", "username":username,"email":email, "password":password},
+                "success":function(data){
+                    console.table(data);
+                    if(data.Message != "Your account has been created"){
+                        $("#formError").html("");
+                        $("#formError").html(data.Message);
+                    }else{
+                        alert(data.Message);
+                        document.location = '/login';
+                    }
+                    
+                }
+            }); 
+        }
+    </script>
+</body>
+</html>
+

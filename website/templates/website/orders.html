@@ -1,0 +1,92 @@
+{% load  static %}
+{% load mathfilters %}
+{% load cloudinary %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Jalome Chirwa"/>
+    <meta name="robots" content="noindex,nofollow"/>
+    <link rel="stylesheet" href="{% static 'website/index.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/animate.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/font-awesome-4.7.0/css/font-awesome.min.css'%}"/>
+    <link rel="icon" href="{% static 'website/favicon.ico' %}"/> 
+    <script type="text/javascript" src="{% static "website/jquery.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/index.js" %}"></script>
+    {% block "title" %}
+        <title>I am SOAP - Orders</title>
+    {% endblock %}
+</head>
+<body style='background:#80808008;'>
+
+        {% if Message == 'Order does exist' %}
+             <div id='orderView'>
+                <div id='orderViewLeft'>
+                    <center>
+                        <img id='orderViewLogo' width="150" src="{% static 'website/logo.jpg' %}"/>    
+                        <p id='orderIntro'>Order #{{id}} made by {{firstname}}  {{lastname}} on {{Date}}</p>
+                        <p id='orderIntro' style='margin-top:20px;'>
+                            <b style='color:gray;'>Your order has been received</b><br/><br/>
+                            
+                            Your order has been accepted and we're getting it ready for you.<br/>
+                            Please return to this page to view the status of your order. Order status shown<br>below
+                        </p> 
+                        <p id='orderIntro' style='margin-top:20px;'>
+                            <b style='color:gray;'>Order status</b><br/><br/>
+                            {% if Complete == False %}
+                                <span id='orderStatusRed'>Re</span> Your order is still getting ready.
+                            {% else %}
+                                <span id='orderStatusGreen'>Re</span> Your order has been delivered.
+                            {% endif %}
+                        </p>
+                        <p id='orderIntro' style='margin-top:20px;'>
+                            <b style='color:gray;'>Account information</b><br/><br/>
+                            <b>Email:</b><br/>{{ Email }}<br/><br/>
+                            <b>Shipping address:</b><br/>
+                            {{street}}<br/>
+                            {{city}}<br/>
+                            {{province}}<br/>
+                            {{country}}<br/>
+                        </p>
+                        <div id='orderViewBtnDiv'>
+                            <a href='/'>
+                            <button>
+                                Visit homepage
+                            </button>
+                            </a>
+                        </div>
+                     </center>
+                </div>
+                <div id='orderViewRight'>
+                    <p id='productsOrderHeading'>Products in this order</p>
+                    {% for i in cart %}
+                       <div id='orderproduct'>
+                            <img src="{{ i.image }}" id='orderProductImage'>
+                            <p id='orderQuantity'>{{i.quantity}}</p>
+                            <p id='orderProductName'><font>{{ i.name }}</font><br>
+                                <span>R {{i.price|mul:i.quantity}}.00</span>
+                            </p>
+                       </div>
+                    {% endfor %}
+                    {% if shipping == True %}
+                    <p id='orderShippingText'><span>Shipping: </span>  <font>R75</font></p>
+                    <p id='orderShippingText'><span>Total: </span>  <font>R{{ total|sub:75 }}.00</font></p>
+                    {% else %}
+                        <p id='orderShippingText'><span>Shipping: </span>  <font>R0</font></p>
+                        <p id='orderShippingText'><span>Total: </span>  <font>R{{ total|sub:75 }}.00</font></p>
+                    {% endif %}
+                    <p id='orderSubtotal'>
+                        <span>Subtotal</span> <font>R{{total}}.00</font>
+                    </p>
+                </div>
+             </div>
+        {% else %}
+            <p id='orderNoExist'>{{ Message }} <a  href='/'>Visit homepage</a></p>
+        {% endif %}
+
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>
+

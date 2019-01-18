@@ -1,0 +1,272 @@
+{% load  static %}
+{% load cloudinary %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Jalome Chirwa"/>
+    <meta name="description" content="View and edit your I am SOAP profile"/>
+    <meta name="robots" content="index,follow"/>
+    <meta name="keywords" content="keywords" content="Soap molds,handmade soap,natural soap,hand soap,soap,lavender soap,bar soap,exfoliating soap,buy soap,body soap,organic soap,shea butter soap,melt and pour soap base,sandalwood soap,goat milk soap,soap making kits,facial soap,milk soap,olive soap,base"/>
+    <link rel="stylesheet" href="{% static 'website/index.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/font-awesome-4.7.0/css/font-awesome.min.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/animate.css'%}"/>
+    <link rel="icon" href="{% static 'website/favicon.ico' %}"/> 
+    <script type="text/javascript" src="{% static "website/jquery.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/index.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/instafeed.js" %}"></script>
+    {% block "title" %}
+        <title>I am SOAP - User Account Page | Update Your Account Details</title>
+    {% endblock %}
+</head>
+<body onload="getAccount()">
+    <div id="contentBox"></div>
+    <div id="overlay" onclick="closeOverlay()"></div>
+    <div id='leftPane'>
+        <p id='searchCont'><input id="searchInput" type="text" placeholder="Search products.."/> <img id="searchIcon" onclick='Search()' src="{% static 'website/search.png' %}"/></p>
+        <p id='link' onclick="document.location ='/'">Home</p>
+        <p id='link' onclick='getProducts()'>Shop</p>
+        <p id='link' onclick="document.location ='/account'">Account</p>
+        <p id='link' onclick='PlasticFree()'>Plastic free</p>
+        <p id='link' onclick='stores()'>Stockists</p>
+        {% comment %} <p id='link' onclick='labels()'>White labels</p>
+        <p id='link' onclick='about()'>FAQ</p> {% endcomment %}
+        <p id='link' onclick='contact()'>Contact</p>
+        <p id='logo' onclick="document.location='/'"><img src="{% static 'website/logo.jpg' %}"/></p>
+        <p id='copyright'>I am SOAP - 2018</p>
+        <img id='menuIcon' onclick='Mobilemenu()' src="{% static 'website/menu.svg' %}"/>
+    </div>
+    <div class="mobileLogin" id='rightPane' style='position:absolute;'>
+        <div id="logoutDiv"><strong id="accInfo">Account information and checkout options</strong><p id='logoutBtn' onclick='document.location="/logout"'>Logout</p></div>
+        <div id="checkoutForm">
+            <div id="address">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" value="saveAddres" name="type">
+                    <h1 id="addressHeading">Shipping Address</h1>
+                    <hr>
+                    <p>Address line 1 (street address)*:</p>
+                    {{ shipping.street }}               
+                    <p>Address line 2 (apartment):</p>
+                    {{ shipping.apartment }}
+                    <p>City*:</p>
+                    {{ shipping.city }}
+                    <p>State/Province*:</p>
+                    {{ shipping.Province }}
+                    <p>Country*:</p>
+                    {{ shipping.Country }}<br><br>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="orderSummary">
+            <div id="circle"></div>
+            <div id="order">
+                <h1 id="orderHeading">Order summary</h1>
+                <p>Here's a summary of your current order</p>
+                <hr><br>
+                <P id="Products"><span id="orderH">No. of products:</span>  <span id="productsCount">0</span></p>
+                <P id="totalCots"><span id="orderH">Total Cost:</span>  <span id="orderCost">R0</span></p>
+                <P id="totalShipping"><span id="orderH">Shipping Cost:</span>  <span id="orderShipping">R0</span></p>
+                <hr><br>    
+                <p id="shippingH">Select shipping</p>  
+                <hr><br>
+                <p id="courierGuy"><input type="checkbox" id="courierGuyInput"><span>The courier guy</span> <img src="{% static 'website/courier.png' %}" id="courierGuyImg"/></p>          
+                <p id="courierGuy"><input type="checkbox" id="localPickupInput"><span>Local Pickup</span> <img src="{% static 'website/pickup.png' %}" id="courierGuyImg"/></p>
+                <button  onclick="applyShipping()">Apply shipping</button>           
+            </div>
+
+            <div id="shipping">
+                <h1 id="orderHeading" style="color:#e63b3b;">Free Shipping information*</h1>
+                <hr><br>
+                <p>Get free shipping for online orders of <b>R1800</b> or above <b>(Local only, outside of local freight for your account)</b>. for orders below that amount local shipping with The Courier Guy is <b>R75</b>. For shipping in all other areas please request a quoate<br><a href="http://thecourierguy.co.za/wp-content/uploads/2016/12/Service-Areas-Johannesburg-Local.pdf" target="_blank"><span>See local areas (shaded in red on map*)</span></a><p> 
+            </div>
+
+            <button id="confirmOrder" onclick="order()">Confirm order</button>
+        </div>
+
+        <div id="accountInfo">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="type" value="saveAccount">
+                <h1 id="orderHeading">Account details</h1>
+                <p>Edit your account details here</p>
+                <hr><br>
+                <p style="width:100%">Name*:</p>
+                {{ account.name }}
+                <p>Surname*:</p>
+                {{ account.surname }}
+                <p>Username*:</p>
+                {{ account.username }}
+                <p>Email address*:</p>
+                {{ account.email }}
+                <p>Current password:</p>
+                {{ account.password }}
+                <p>New password:</p>
+                {{ account.newPass }}
+                <p>Confirm New password:</p>
+                {{ account.confPass }}
+                <button type="submit">Save</button>  
+            </form>
+        </div>
+
+        
+        <footer>   
+            <div id='author'>
+                <p>Website developed by Jalome Chirwa</p>
+            </div>
+            <div id='socialIcon'>
+                <span>Social media links:</span>
+                <a href="https://www.instagram.com/i_am_soap/" target="_blank"><i class="fa fa-instagram"></i></a>
+                <a href="https://twitter.com/i_am_SOAP_ZA" target="_blank"><i class="fa fa-twitter"></i></a>
+                <a href="https://www.facebook.com/i-am-SOAP-572064306576184/" target="_blank"><i class="fa fa-facebook"></i></a>
+            </div>
+        </footer>
+
+    </div>
+
+
+
+    <script type="text/javascript">
+        //contact form message
+        function contactFormMessage(name,email,mobile,to,message){
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "url":"/",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"contactMessage", "name": name,"email":email,"mobile":mobile,"to":to,"message":message},
+                "success":function(data){
+                    console.log(data);
+                    renderContactMessageResult(data.Message);
+                }
+
+            });
+        }
+
+        //place the order
+        function placeOrder(cart,shipping,totalCost){
+            $("#circle").show();
+            $.ajax({
+                "type":"POST",
+                "url":"/account",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"placeOrder", "cart":JSON.stringify(cart),"shipping":shipping,"cost":totalCost},
+                "success":function(data){
+                    console.table(data)
+                    if(data.Message == "Successfull"){
+                        localStorage.clear();
+                        localStorage.setItem("Cart", "[]");
+                        $("#rightPane").html("");
+                        $("#rightPane").html("<p id='orderRecievedText'>Order has been received, please check your email for your invoice</p>");
+                    }else{
+                        alert(data.Message)
+                        $("#circle").hide();
+                    }
+                }
+            });
+        }
+
+
+        //get the account details and addresses
+        function getAccount(){
+            products = localStorage.getItem("Cart");
+            $.ajax({
+                "type":"POST",
+                "url":"/account",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getAccount", "cart":products},
+                "success":function(data){
+                    console.table(data)
+                    renderAccount(data);
+                }
+            });
+        }
+
+
+       //renders the top section of the shop page
+        function renderShopOptions(){
+            var pane = $("#rightPane");
+            var paneTopBar = $("<div id='paneTopBar'></div>");
+            var productInfoTab = $("<div id='productInfo'></div>");
+            var productsContainer = $("<div id='products'></div>");
+            var shopMenu = $("<div id='shopMenu'><ul id='menu'><li id='filter'>Filter: </li><li onclick='selectCat(this)' id='All' class='selected'>All</li><li id='Bars' onclick='selectCat(this)'>Bars</li><li id='Shampoo' onclick='selectCat(this)'>Shampoo</li><li id='LiquidOil' onclick='selectCat(this)'>Liquid soap</li><li id='clear' onclick='selectCat(this)'>Clear Soap</li> <li id='cologne' onclick='selectCat(this)'>Cologne & Perfume</li> <li id='Lotion' onclick='selectCat(this)'>Lotion</li> <li id='plastic' onclick='selectCat(this)'>Plastic free</li> <li id='palm' onclick='selectCat(this)'>Palm oil free</li></ul></div>");
+            var cart = $("<div id='cart' onclick='DisplayCart()'><img src='{% static 'website/cart.png' %}'/> <span id='Count'>0</span></div>")
+            paneTopBar.append(shopMenu);
+            paneTopBar.append(cart);
+            pane.append(paneTopBar);
+            pane.append(productInfoTab);
+            pane.append(productsContainer);
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getProducts"},
+                "success":function(data){
+                    console.table(data.response)
+                    renderproducts(data.response, "{% static 'website/info.png' %}");
+                }
+            });
+        }
+
+        function getCategory(category){
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getCategory", "category":category},
+                "success":function(data){
+                    console.table(data.response);
+                    renderproducts(data.response, "{% static 'website/info.png' %}");
+                }
+            });
+        }
+
+        function displayImg(id){
+            $("#productInfo").css("display", "block");
+            var product_display = $("<div id='product_display'> </div>");
+            var image_tab = $("<img id='view_product_image'>");
+            var product_desc = $("<div id='view_product_desc'>  </div>");
+            product_display.append(image_tab);
+            product_display.append(product_desc);
+            $("#productInfo").append(product_display);
+            if(window.innerWidth <= 1000){
+                $("#paneTopBar").css("position","absolute");
+                $("#paneTopBar").css("z-index","1");
+                $("#rightPane").css("position","fixed");
+            }
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getProductInfo", "id":id},
+                "success":function(data){
+                    console.table(data.response);
+                    renderProductInfo(data.response);
+                }
+            });
+        }
+
+        function getCartProducts(cart){
+            console.log(cart);
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "url":"/",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getCartProducts", "cart":JSON.stringify(cart)},
+                "success":function(data){
+                    console.table(data.response);
+                    renderCart(data.response);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

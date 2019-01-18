@@ -1,0 +1,286 @@
+{% load  static %}
+{% load cloudinary %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="author" content="Jalome Chirwa"/>
+    <meta name="robots" content="index,follow"/>
+    <meta name="keywords" content="keywords" content="Soap molds,handmade soap,natural soap,hand soap,soap,lavender soap,bar soap,exfoliating soap,buy soap,body soap,organic soap,shea butter soap,melt and pour soap base,sandalwood soap,goat milk soap,soap making kits,facial soap,milk soap,olive soap,base"/>
+    <meta name="description" content="We at I am SOAP make handcrafted soap. All the soap is made using vegetable oils, fats and butter’s, pure essential oils are used for their wonderful smell and healing properties."/>
+    <link rel="stylesheet" href="{% static 'website/index.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/animate.css'%}"/>
+    <link rel="stylesheet" href="{% static 'website/font-awesome-4.7.0/css/font-awesome.min.css'%}"/>
+    <link rel="icon" href="{% static 'website/favicon.ico' %}"/> 
+    <script type="text/javascript" src="{% static "website/jquery.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/index.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/instafeed.js" %}"></script>
+    <script type="text/javascript" src="{% static "website/instafeedScript.js" %}"></script>
+    {% block "title" %}
+        <title>I am SOAP - Home Of Body Products For The Soul</title>
+    {% endblock %}
+</head>
+<body onload='getFeaturedProducts()'>
+    <div id="contentBox"></div>
+    <div id="overlay" onclick="closeOverlay()"></div>
+    <div id='leftPane'>
+        <p id='searchCont'><input id="searchInput" type="text" placeholder="Search products.."/> <img id="searchIcon" onclick='Search()'  src="{% static 'website/search.png' %}"/></p>
+        <p id='link' onclick="document.location ='/'">Home</p>
+        <p id='link' onclick='getProducts()'>Shop</p>
+        <p id='link' onclick="document.location ='/account'">Account</p>
+        <p id='link' onclick='PlasticFree()'>Plastic free</p>
+        <p id='link' onclick='stores()'>Stockists</p>
+        {% comment %} <p id='link' onclick='labels()'>White labels</p>
+        <p id='link' onclick='about()'>FAQ</p> {% endcomment %}
+        <p id='link' onclick='contact()'>Contact</p>
+        <p id='logo' onclick="document.location='/'"><img src="{% static 'website/logo.jpg' %}"/></p>
+        <p id='copyright'>I am SOAP - 2018</p>
+        <img id='menuIcon' onclick='Mobilemenu()' src="{% static 'website/menu.svg' %}"/>
+    </div>
+    <div id='rightPane'>
+        <div id="productInfo"></div>
+        <div id='slider'>
+            <div id='sliderImg'></div>
+            <img id='leftArrow' src="{% static 'website/angle-pointing-to-left.png' %}"/ onclick='prevSlider()'>
+            <img id='rightArrow' src="{% static 'website/angle-arrow-pointing-to-right.png' %}" onclick='nextSlider()'/>
+            <div id='desc'>
+                <p id='sliderDesc'>We at i am SOAP have started taking steps to be plastic free. All our bars of soap are PLASTIC FREE, no single use, plastic wrapper or any plastic for that matter.
+                </p>
+                <button onclick="getProducts()">Shop now</button>
+            </div>
+        </div>
+        <div id='sliderDots'>
+            <span><div id='dot1'></div></span>
+            <span><div id='dot2'></div></span>
+            <span><div id='dot3'></div></span>
+        </div>
+        <h1 id='title'>Home page</h1>
+        <div id='line'></div>
+        <p id='homeDesc'>
+            We at I am SOAP make handcrafted soap. All the soap is made using vegetable oil, fat and butter, pure<br> 
+            essential oils are used for their wonderful smell and healing properties. Ground dried herbs are used to<br>
+             add colour to the natural soap as well as adding exfoliating properties, no harsh chemicals or preservatives<br>
+                are added, keeping the soap as natural as possible.
+        </p>
+        <h1 id='title'>Featured products</h1>
+        <div id='line'></div>
+
+        <div id='featuredProducts'>
+        </div>
+
+        <div id='instafeed'>
+            <div id='space'></div>
+            <h1 id='title'>Latest from Instagram</h1>
+            <div id='line'></div>
+            <div class='space'></div>
+
+        </div>
+
+
+        <footer>   
+            <div id='author'>
+                <p>Website developed by Jalome Chirwa</p>
+            </div>
+            <div id='socialIcon'>
+                <span>Social media links:</span>
+                <a href="https://www.instagram.com/i_am_soap/" target="_blank"><i class="fa fa-instagram"></i></a>
+                <a href="https://twitter.com/i_am_SOAP_ZA" target="_blank"><i class="fa fa-twitter"></i></a>
+                <a href="https://www.facebook.com/i-am-SOAP-572064306576184/" target="_blank"><i class="fa fa-facebook"></i></a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript">
+        //contact form message
+        function contactFormMessage(name,email,mobile,to,message){
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "url":"/",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"contactMessage", "name": name,"email":email,"mobile":mobile,"to":to,"message":message},
+                "success":function(data){
+                    console.log(data);
+                    renderContactMessageResult(data.Message);
+                }
+
+            });
+        }
+
+
+        //search function
+        function Search(){
+            var searchInput =  document.getElementById("searchInput").value;
+            if(searchInput == ""){
+                alert("Please enter a search phrase");
+            }else{
+                $.ajax({
+                    "type":"POST",
+                    "dataType":"json",
+                    "url":"/",
+                    "async":true,
+                    "data":{"csrfmiddlewaretoken": "{{ csrf_token }}", "type":"searchProducts", "search":searchInput},
+                    "success":function(data){
+                        console.table(data.response);
+                        renderSearchResults(data.response);
+                    }
+                })
+            }
+        }
+
+        //slider functions
+        var count = 1;
+        function nextSlider(){
+            count+=1;
+            if(count == 2){
+                $("#dot2").css("background","grey");
+                $("#dot1").css("background","transparent");
+                $("#dot3").css("background","transparent");
+                $("#sliderImg").css("background-image", "url("+"{% static 'website/2.jpg' %}"+")");
+                $("#sliderImg").addClass("animated slideInLeft").one("webkitAnimationEnd", function(){
+                    $("#sliderImg").removeClass();
+
+                });
+            }
+            else if(count == 3 ){
+                $("#dot3").css("background","grey");
+                $("#dot1").css("background","transparent");
+                $("#dot2").css("background","transparent");
+                $("#sliderImg").css("background-image", "url("+"{% static 'website/3.jpg' %}"+")");
+                $("#sliderImg").addClass("animated slideInLeft").one("webkitAnimationEnd", function(){
+                    $("#sliderImg").removeClass();
+
+                });
+            }
+            else if(count = 3){
+                count == 3;
+            }
+            console.log(count);
+        }
+
+        function prevSlider(){
+            count-=1;
+            if(count == 2){
+                $("#dot2").css("background","grey");
+                $("#dot1").css("background","transparent");
+                $("#dot3").css("background","transparent");
+                $("#sliderImg").css("background-image", "url("+"{% static 'website/2.jpg' %}"+")");
+                $("#sliderImg").addClass("animated slideInRight").one("webkitAnimationEnd", function(){
+                    $("#sliderImg").removeClass();
+
+                });
+            }
+            else if(count == 1 ){
+                $("#dot1").css("background","grey");
+                $("#dot3").css("background","transparent");
+                $("#dot2").css("background","transparent");
+                $("#sliderImg").css("background-image", "url("+"{% static 'website/1.jpg' %}"+")");
+                $("#sliderImg").addClass("animated slideInRight").one("webkitAnimationEnd", function(){
+                    $("#sliderImg").removeClass();
+
+                });
+            }
+            else if(count == 0){
+                count = 1;
+            }
+            console.log(count);
+        }
+        //end slider functions
+
+        function getFeaturedProducts(){
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "url":"/",
+                "async":true,
+                "data":{"csrfmiddlewaretoken": "{{ csrf_token }}", "type":"getFeaturedProducts"},
+                "success":function(data){
+                    console.table(data.response);
+                    renderFeaturedproducts(data.response);
+                }
+            })
+        }
+
+        //renders the top section of the shop page
+        function renderShopOptions(){
+            var pane = $("#rightPane");
+            var paneTopBar = $("<div id='paneTopBar'></div>");
+            var productInfoTab = $("<div id='productInfo'></div>");
+            var productsContainer = $("<div id='products'></div>");
+            var shopMenu = $("<div id='shopMenu'><ul id='menu'><li id='filter'>Filter: </li><li onclick='selectCat(this)' id='All' class='selected'>All</li><li id='Bars' onclick='selectCat(this)'>Bars</li><li id='Shampoo' onclick='selectCat(this)'>Shampoo</li><li id='LiquidOil' onclick='selectCat(this)'>Liquid soap</li><li id='clear' onclick='selectCat(this)'>Clear Soap</li> <li id='cologne' onclick='selectCat(this)'>Cologne & Perfume</li> <li id='Lotion' onclick='selectCat(this)'>Lotion</li> <li id='plastic' onclick='selectCat(this)'>Plastic free</li> <li id='palm' onclick='selectCat(this)'>Palm oil free</li></ul></div>");
+            var cart = $("<div id='cart' onclick='DisplayCart()'><img src='{% static 'website/cart.png' %}'/> <span id='Count'>0</span></div>")
+            paneTopBar.append(shopMenu);
+            paneTopBar.append(cart);
+            pane.append(paneTopBar);
+            pane.append(productInfoTab);
+            pane.append(productsContainer);
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getProducts"},
+                "success":function(data){
+                    console.table(data.response)
+                    renderproducts(data.response, "{% static 'website/info.png' %}");
+                }
+            });
+        }
+
+        function getCategory(category){
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getCategory", "category":category},
+                "success":function(data){
+                    console.table(data.response);
+                    renderproducts(data.response, "{% static 'website/info.png' %}");
+                }
+            });
+        }
+
+        function displayImg(id){
+            $("#productInfo").css("display", "block");
+            var product_display = $("<div id='product_display'> </div>");
+            var image_tab = $("<img id='view_product_image'>");
+            var product_desc = $("<div id='view_product_desc'>  </div>");
+            product_display.append(image_tab);
+            product_display.append(product_desc);
+            $("#productInfo").append(product_display);
+            if(window.innerWidth <= 1000){
+                $("#paneTopBar").css("position","absolute");
+                $("#paneTopBar").css("z-index","1");
+                $("#rightPane").css("position","fixed");
+            }
+            $.ajax({
+                "type":"POST",
+                "url":"/",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getProductInfo", "id":id},
+                "success":function(data){
+                    console.table(data.response);
+                    renderProductInfo(data.response);
+                }
+            });
+        }
+
+        function getCartProducts(cart){
+            console.log(cart);
+            $.ajax({
+                "type":"POST",
+                "dataType":"json",
+                "async":true,
+                "data":{"csrfmiddlewaretoken":"{{ csrf_token }}", "type":"getCartProducts", "cart":JSON.stringify(cart)},
+                "success":function(data){
+                    console.table(data.response);
+                    renderCart(data.response);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
